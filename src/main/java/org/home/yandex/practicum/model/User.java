@@ -3,20 +3,23 @@ package org.home.yandex.practicum.model;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 public class User {
     @NotNull
-    Integer id;
+    private Integer id;
     @NotBlank
     @Email
-    String email;
+    private String email;
     @NotBlank
-    String login;
-    String name;
-    Date birthday;
+    private String login;
+    private String name;
+    @NotNull
+    @PastOrPresent
+    private LocalDate birthday;
 }

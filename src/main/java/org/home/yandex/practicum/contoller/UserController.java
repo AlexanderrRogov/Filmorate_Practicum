@@ -1,7 +1,6 @@
 package org.home.yandex.practicum.contoller;
 
 import jakarta.validation.Valid;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.home.yandex.practicum.exceptions.ValidationException;
 import org.home.yandex.practicum.model.User;
@@ -12,17 +11,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 @RestController
 @Slf4j
 public class UserController {
 
-    HashMap<Integer, User> users = new HashMap<>();
+   private final HashMap<Integer, User> users = new HashMap<>();
 
     @GetMapping("/users")
     public List<User> users() {
@@ -40,8 +37,8 @@ public class UserController {
         return user;
     }
 
-    @PostMapping("/user/{id}")
-    public User create(@Valid @RequestBody User user, @PathVariable int id) {
+    @PostMapping("/user")
+    public User create(@Valid @RequestBody User user) {
         if(user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.error("Email is required");
             throw new ValidationException("Email is required");
@@ -54,11 +51,11 @@ public class UserController {
             log.warn("Name is empty. Now login will be your name");
             user.setName(user.getLogin());
         }
-        if (user.getBirthday().after(new Date())) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             log.error("Birthday is after date");
             throw new ValidationException("Correct birthday is required");
         }
-       users.put(id, user);
+       users.put(user.getId(), user);
        return user;
     }
 }
