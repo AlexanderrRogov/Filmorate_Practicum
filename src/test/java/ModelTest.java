@@ -4,25 +4,32 @@ import org.home.yandex.practicum.exceptions.ValidationException;
 import org.home.yandex.practicum.model.Film;
 import org.home.yandex.practicum.model.User;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+@Component
 public class ModelTest {
 
-    UserController userController = new UserController();
-    User testUser = new User(1, "qwerty@gmail.com", "ASD3@#d", "Alex", LocalDate.parse("1978-02-05"));
-    User testUserWithoutEmail = new User(1, "", "ASD3@#d", "Alex", LocalDate.parse("1978-02-05"));
-    User testUserWithoutName = new User(1, "qwerty@gmail.com", "ASD3@#d", "", LocalDate.parse("1978-02-05"));
-    FilmController filmController = new FilmController();
-    Film film = new Film(1, "Lord of the Rings", "dsfdfdfsf", LocalDate.parse("2001-02-07"), 180L);
-    Film filmWithWrongDuration = new Film(1, "Lord of the Rings", "dsfdfdfsf", LocalDate.parse("2001-02-07"), -1L);
+    @Autowired
+    private FilmController filmController;
+
+    @Autowired
+    private UserController userController;
+
+    User testUser = new User(1, "qwerty@gmail.com", "ASD3@#d", "Alex", LocalDate.parse("1978-02-05"), null);
+    User testUserWithoutEmail = new User(1, "", "ASD3@#d", "Alex", LocalDate.parse("1978-02-05"), null);
+    User testUserWithoutName = new User(1, "qwerty@gmail.com", "ASD3@#d", "", LocalDate.parse("1978-02-05"), null);
+    Film film = new Film(1, "Lord of the Rings", "dsfdfdfsf", LocalDate.parse("2001-02-07"), 180L, null);
+    Film filmWithWrongDuration = new Film(1, "Lord of the Rings", "dsfdfdfsf", LocalDate.parse("2001-02-07"), -1L, null);
     Film filmWithWrongDate = new Film(1, "Lord of the Rings",
-            "dsfdfdfdsdsfdsfsdfsdfdsfdsfsdfsdfsdfsdfsdfsdfdsfsdfsdfsfsdfsdfdsdffsdf", LocalDate.parse("1895-12-27"), 180L);
+            "dsfdfdfdsdsfdsfsdfsdfdsfdsfsdfsdfsdfsdfsdfsdfdsfsdfsdfsfsdfsdfdsdffsdf", LocalDate.parse("1895-12-27"), 180L, null);
     Film filmWithWrongDate2 = new Film(1, "Lord of the Rings",
-            "dsfdfdfdsdsfdsfsdfsdfdsfdsfsdfsdfsdfsdfsdfsdfdsfsdfsdfsfsdfsdfdsdffsdf", LocalDate.parse("1895-12-28"), 180L);
+            "dsfdfdfdsdsfdsfsdfsdfdsfdsfsdfsdfsdfsdfsdfsdfdsfsdfsdfsfsdfsdfdsdffsdf", LocalDate.parse("1895-12-28"), 180L, null);
 
     @Test
     public void testModelUser() {
