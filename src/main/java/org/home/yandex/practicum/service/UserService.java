@@ -1,5 +1,6 @@
 package org.home.yandex.practicum.service;
 
+import org.home.yandex.practicum.exceptions.NotFoundException;
 import org.home.yandex.practicum.model.User;
 import org.home.yandex.practicum.storage.InMemoryUserStorage;
 import org.home.yandex.practicum.storage.UserStorage;
@@ -22,6 +23,9 @@ public class UserService {
 
      public User addFriend(int id, int friendId) {
         var user = userStorage.getUsers().get(id);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
         var newFriendsSet = user.getFriendsIds();
         newFriendsSet.add(friendId);
         user.setFriendsIds(newFriendsSet);
@@ -30,6 +34,9 @@ public class UserService {
 
      public User removeFriend(int id, int friendId) {
          var user = userStorage.getUsers().get(id);
+         if (user == null) {
+             throw new NotFoundException("User not found");
+         }
          var newFriendsSet = user.getFriendsIds();
          newFriendsSet.remove(friendId);
          user.setFriendsIds(newFriendsSet);
@@ -37,15 +44,15 @@ public class UserService {
      }
 
     public List<User> showUserFriends(int id) {
-       var friendsIds = userStorage.getUsers().get(id).getFriendsIds();
-       var users = userStorage.getUsers();
-       List<User> userFriends = new ArrayList<>();
-       for (var friendId : friendsIds) {
-          var user= users.get(friendId);
-          if(user != null) {
-              userFriends.add(user);
-          }
-       }
+        var friendsIds = userStorage.getUsers().get(id).getFriendsIds();
+        var users = userStorage.getUsers();
+        List<User> userFriends = new ArrayList<>();
+        for (var friendId : friendsIds) {
+            var user = users.get(friendId);
+            if (user != null) {
+                userFriends.add(user);
+            }
+        }
         return userFriends;
     }
 

@@ -1,5 +1,6 @@
 package org.home.yandex.practicum.service;
 
+import org.home.yandex.practicum.exceptions.NotFoundException;
 import org.home.yandex.practicum.model.Film;
 import org.home.yandex.practicum.storage.FilmStorage;
 import org.home.yandex.practicum.storage.InMemoryFilmStorage;
@@ -20,6 +21,9 @@ public class FilmService {
 
     public Film addLike(int filmId, int userId) {
         var film = filmStorage.getFilms().get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Film not found");
+        }
         var newLikeSet = film.getUserLike();
         newLikeSet.add(userId);
         film.setUserLike(newLikeSet);
@@ -28,6 +32,9 @@ public class FilmService {
 
     public Film removeLike(int filmId, int userId) {
         var film = filmStorage.getFilms().get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Film not found");
+        }
         var newLikeSet = film.getUserLike();
         newLikeSet.remove(userId);
         film.setUserLike(newLikeSet);
