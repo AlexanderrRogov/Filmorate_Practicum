@@ -21,8 +21,8 @@ import java.util.List;
 @Slf4j
 public class UserController {
 
-    UserStorage userStorage;
-    UserService userService;
+    private final UserStorage userStorage;
+    private final UserService userService;
 
     @Autowired
    public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {

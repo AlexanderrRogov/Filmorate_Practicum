@@ -46,15 +46,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film delete(int id) {
-        if (id <= 0) {
-            log.error("Wrong id number");
-            throw new ValidationException("Wrong id number");
-        }
-        if (films.keySet().stream().toList().contains(id)) {
+        Film film = films.remove(id);
+
+        if (film == null) {
             log.warn("Can't delete film. Film with id {} not found", id);
             throw new ValidationException("Film not found");
         }
-        return films.remove(id);
+        return film;
     }
 
     @Override

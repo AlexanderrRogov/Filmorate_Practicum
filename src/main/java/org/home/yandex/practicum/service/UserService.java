@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -57,20 +57,14 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int id, int otherId) {
-       var user = userStorage.getUsers().get(id);
-       var otherUser = userStorage.getUsers().get(otherId);
-       HashSet<Integer> intersection = new HashSet<>();
-       Objects.requireNonNull(user).getFriendsIds().forEach((i) -> {
-            if (Objects.requireNonNull(otherUser).getFriendsIds().contains(i))
-                intersection.add(i);
-        });
-       List<User> commonFriends = new ArrayList<>();
-       for (var friendId : intersection) {
-          var friend =  userStorage.getUsers().get(friendId);
-           if(friend != null) {
-               commonFriends.add(friend);
-           }
-       }
-     return commonFriends;
+        final User user = userStorage.getUsers().get(id);
+        final User other = userStorage.getUsers().get(otherId);
+        final Set<Integer> friends = user.getFriendsIds();
+        final Set<Integer> otherFriends = other.getFriendsIds();
+
+        return friends.stream()
+                .filter(otherFriends::contains)
+                .map(userId -> userStorage.getUsers().get(userId))
+                .collect(Collectors.toList());
     }
 }

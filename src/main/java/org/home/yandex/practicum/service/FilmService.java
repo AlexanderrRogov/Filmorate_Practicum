@@ -6,9 +6,9 @@ import org.home.yandex.practicum.storage.FilmStorage;
 import org.home.yandex.practicum.storage.InMemoryFilmStorage;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -24,9 +24,7 @@ public class FilmService {
         if (film == null) {
             throw new NotFoundException("Film not found");
         }
-        var newLikeSet = film.getUserLike();
-        newLikeSet.add(userId);
-        film.setUserLike(newLikeSet);
+        film.getUserLike().add(userId);
         return film;
     }
 
@@ -35,21 +33,18 @@ public class FilmService {
         if (film == null) {
             throw new NotFoundException("Film not found");
         }
-        var newLikeSet = film.getUserLike();
-        newLikeSet.remove(userId);
-        film.setUserLike(newLikeSet);
+        film.getUserLike().remove(userId);
         return film;
     }
 
-    public List<Film> getTenMostPopularFilms(int count) {
-        List<Film> moreLikedFilms = new ArrayList<>();
-        List<Film> copy = new ArrayList<>(filmStorage.getFilms().values());
-        for (int i = 0; i < count; i++) {
-            var film = copy.stream().max(Comparator.comparing(x->x.getUserLike().size())).orElseThrow();
-            moreLikedFilms.add(film);
-            copy.remove(film);
-        }
-        return moreLikedFilms;
+    public List<Film> getPopular(int count) {
+        return filmStorage.getFilms().values().stream()
+                .sorted(FILM_COMPARATOR)
+                .limit(count)
+                .collect(Collectors.toList());
     }
+
+    public static final Comparator<Film> FILM_COMPARATOR =
+            Comparator.comparingInt(Film::getRate).reversed();
 }
 

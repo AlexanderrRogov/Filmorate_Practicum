@@ -24,4 +24,8 @@ public class Film {
     @Min(1)
     private Long duration;
     private Set<Integer> userLike;
+
+    public int getRate() {
+        return userLike.size();
+    }
 }
