@@ -37,7 +37,7 @@ public class UserController {
 
     @PutMapping("/user/{id}")
     public User saveArticle(@Valid @RequestBody User user, @PathVariable int id) {
-       return userStorage.saveArticle(user, id);
+       return userStorage.update(user, id);
     }
 
     @PostMapping("/user")
@@ -53,6 +53,11 @@ public class UserController {
     @PutMapping("/users/{id}/friends/{friendId}")
     public User addFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.addFriend(id, friendId);
+    }
+
+    @PutMapping("/users/{id}/accept/{friendId}")
+    public User acceptFriend(@PathVariable int id, @PathVariable int friendId) {
+        return userService.acceptFriend(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")

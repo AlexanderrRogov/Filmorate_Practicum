@@ -1,9 +1,12 @@
 package org.home.yandex.practicum.service;
 
 import org.home.yandex.practicum.exceptions.NotFoundException;
+import org.home.yandex.practicum.model.SubscriberStatus;
 import org.home.yandex.practicum.model.User;
 import org.home.yandex.practicum.storage.InMemoryUserStorage;
 import org.home.yandex.practicum.storage.UserStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +15,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.home.yandex.practicum.enums.FriendshipStatus.FRIEND;
+import static org.home.yandex.practicum.enums.FriendshipStatus.SUBSCRIBER;
+
 @Service
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserStorage userStorage;
     @Autowired
      public UserService(InMemoryUserStorage inMemoryUserStorage) {
@@ -27,7 +34,7 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
         var newFriendsSet = user.getFriendsIds();
-        newFriendsSet.add(friendId);
+        newFriendsSet.add(new SubscriberStatus(friendId, SUBSCRIBER));
         user.setFriendsIds(newFriendsSet);
         return user;
      }
@@ -44,14 +51,18 @@ public class UserService {
      }
 
     public List<User> showUserFriends(int id) {
-        var friendsIds = userStorage.getUsers().get(id).getFriendsIds();
-        var users = userStorage.getUsers();
+        var user = userStorage.getUsers().get(id);
+        var subscribers = user.getFriendsIds();
         List<User> userFriends = new ArrayList<>();
-        for (var friendId : friendsIds) {
-            var user = users.get(friendId);
-            if (user != null) {
-                userFriends.add(user);
+        for (var subsStatus : subscribers) {
+            if (subsStatus.getFriendshipStatus().equals(FRIEND)) {
+                var friend = userStorage.getUsers().get(subsStatus.getSubscriberId());
+                userFriends.add(friend);
             }
+        }
+        if(userFriends.isEmpty()) {
+            log.warn("No friends found");
+            throw new NotFoundException("No friends found");
         }
         return userFriends;
     }
@@ -59,12 +70,23 @@ public class UserService {
     public List<User> getCommonFriends(int id, int otherId) {
         final User user = userStorage.getUsers().get(id);
         final User other = userStorage.getUsers().get(otherId);
-        final Set<Integer> friends = user.getFriendsIds();
-        final Set<Integer> otherFriends = other.getFriendsIds();
+        final Set<SubscriberStatus> friends = user.getFriendsIds();
+        final Set<SubscriberStatus> otherFriends = other.getFriendsIds();
 
         return friends.stream()
                 .filter(otherFriends::contains)
-                .map(userId -> userStorage.getUsers().get(userId))
+                .map(userId -> userStorage.getUsers().get(userId.getSubscriberId()))
                 .collect(Collectors.toList());
+    }
+
+    public User acceptFriend(int id, int friendId) {
+        final User user = userStorage.getUsers().get(id);
+        var subscribers = user.getFriendsIds();
+        subscribers.stream().filter(x->x.getSubscriberId().equals(friendId)).findFirst().ifPresent(x->{
+            if(x.getFriendshipStatus().equals(SUBSCRIBER)) {
+                x.setFriendshipStatus(FRIEND);
+            }
+        });
+        return user;
     }
 }

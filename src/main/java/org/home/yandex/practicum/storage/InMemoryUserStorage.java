@@ -2,6 +2,7 @@ package org.home.yandex.practicum.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.home.yandex.practicum.exceptions.ValidationException;
+import org.home.yandex.practicum.model.SubscriberStatus;
 import org.home.yandex.practicum.model.User;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final HashMap<Integer, User> users = new HashMap<>();
 
-    public User saveArticle(User user, int id) {
+    public User update(User user, int id) {
         if(users.keySet().stream().toList().contains(user.getId())) {
             users.put(id, user);
         } else {
@@ -56,8 +57,7 @@ public class InMemoryUserStorage implements UserStorage {
         return users;
     }
 
-    @Override
-    public Set<Integer> getFriendsIds(int userId) {
+    public Set<SubscriberStatus> getFriendsIds(int userId) {
         return users.get(userId).getFriendsIds();
     }
 }

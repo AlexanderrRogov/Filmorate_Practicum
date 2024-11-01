@@ -5,13 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import org.home.yandex.practicum.enums.Genre;
+import org.home.yandex.practicum.enums.MotionPictureAssociation;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Film {
     @NotNull
     private Integer id;
@@ -24,6 +28,8 @@ public class Film {
     @Min(1)
     private Long duration;
     private Set<Integer> userLike;
+    private Set<Genre> genre;
+    private MotionPictureAssociation mpa;
 
     public int getRate() {
         return userLike.size();
