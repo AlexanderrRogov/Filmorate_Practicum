@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films = new HashMap<>();
 
-    public Film saveArticle(Film film, int id) {
+    public Film update(Film film, int id) {
         if(films.keySet().stream().toList().contains(id)) {
             films.put(id, film);
         } else {

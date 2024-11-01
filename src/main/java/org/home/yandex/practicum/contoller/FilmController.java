@@ -37,8 +37,8 @@ public class FilmController {
     }
 
     @PutMapping("/film/{id}")
-    public Film saveArticle(@Valid @RequestBody Film film, @PathVariable int id) {
-      return filmStorage.saveArticle(film, id);
+    public Film update(@Valid @RequestBody Film film, @PathVariable int id) {
+      return filmStorage.update(film, id);
     }
 
     @PostMapping("/film")
