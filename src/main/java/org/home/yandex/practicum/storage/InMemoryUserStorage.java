@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -53,8 +54,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public HashMap<Integer, User> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return users.values().stream().toList();
     }
 
     public Set<SubscriberStatus> getFriendsIds(int userId) {

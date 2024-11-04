@@ -4,8 +4,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.home.yandex.practicum.model.Film;
 import org.home.yandex.practicum.service.FilmService;
-import org.home.yandex.practicum.storage.FilmStorage;
-import org.home.yandex.practicum.storage.InMemoryFilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,37 +20,36 @@ import java.util.List;
 @Slf4j
 public class FilmController {
 
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
-        filmStorage = inMemoryFilmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping("/films")
     public List<Film> films() {
-        return filmStorage.getFilms().values().stream().toList();
+        return filmService.getFilms().stream().toList();
     }
 
     @PutMapping("/film/{id}")
     public Film update(@Valid @RequestBody Film film, @PathVariable int id) {
-      return filmStorage.update(film, id);
+      return filmService.update(film, id);
     }
 
     @PostMapping("/film")
     public Film create(@Valid @RequestBody Film film) {
-        return filmStorage.create(film);
+
+        return filmService.create(film);
     }
 
     @DeleteMapping("/film/{id}")
     public Film create(@PathVariable int id) {
-        return filmStorage.delete(id);
+        return filmService.delete(id);
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public Film saveArticle(@PathVariable int id, @PathVariable int userId) {
+    public Film addLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.addLike(id, userId);
     }
 

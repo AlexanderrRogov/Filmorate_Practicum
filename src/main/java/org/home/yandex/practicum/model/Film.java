@@ -7,10 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.home.yandex.practicum.enums.Genre;
-import org.home.yandex.practicum.enums.MotionPictureAssociation;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -24,14 +23,29 @@ public class Film {
     @Size(min = 1, max = 200)
     private String description;
     @NotNull
-    private LocalDate releaseDate;
+    private LocalDate dateProd;
     @Min(1)
     private Long duration;
-    private Set<Integer> userLike;
+    private Set<UserLike> userLike;
+    @NotNull
     private Set<Genre> genre;
-    private MotionPictureAssociation mpa;
+    private String mpa;
 
     public int getRate() {
         return userLike.size();
+    }
+
+    public void addNewGenre(Genre g) {
+        if (genre == null) {
+            genre = new HashSet<>();
+        }
+        genre.add(g);
+    }
+
+    public void addNewUserLike(UserLike ul) {
+        if (userLike == null) {
+            userLike = new HashSet<>();
+        }
+        userLike.add(ul);
     }
 }

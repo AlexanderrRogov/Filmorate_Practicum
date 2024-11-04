@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -33,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Film name is empty");
             throw new ValidationException("Film name is empty");
         }
-        if(film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
+        if(film.getDateProd().isBefore(LocalDate.parse("1895-12-28"))) {
             log.error("Film release date is invalid");
             throw new ValidationException("Film release date is invalid");
         }
@@ -56,7 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public HashMap<Integer, Film> getFilms() {
-        return films;
+    public List<Film> getFilms() {
+        return films.values().stream().toList();
     }
 }
