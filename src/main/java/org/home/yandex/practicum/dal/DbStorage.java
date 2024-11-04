@@ -10,4 +10,5 @@ public interface DbStorage<T> {
     T delete(int id);
     T get(int id);
     List<T> getCollection();
+
 }

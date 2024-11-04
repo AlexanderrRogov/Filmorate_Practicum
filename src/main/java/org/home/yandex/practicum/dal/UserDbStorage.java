@@ -1,6 +1,7 @@
 package org.home.yandex.practicum.dal;
 
 import lombok.SneakyThrows;
+import org.home.yandex.practicum.Utils.Util;
 import org.home.yandex.practicum.enums.FriendshipStatus;
 import org.home.yandex.practicum.exceptions.NotFoundException;
 import org.home.yandex.practicum.exceptions.ServerSideException;
@@ -19,18 +20,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 @Repository
 @Component
 public class UserDbStorage implements DbStorage<User> {
 
     private final JdbcTemplate jdbcTemplate;
-    Connection conn;
+    private final Connection conn;
 
     @SneakyThrows
     @Autowired
@@ -53,16 +51,9 @@ public class UserDbStorage implements DbStorage<User> {
                     user.getBirthday(),
                     user.getEmail(), user.getId());
             conn.commit();
-            String sqlQueryInsert = "update SUBSCRIBER_STATUS into set ID = ? , USERID = ?, SUBSCRIBERID = ?, FRIENDSHIPSTATUS = ? " +
+            String sqlQueryInsert = "update SUBSCRIBER_STATUS into set USERID = ?, SUBSCRIBERID = ?, FRIENDSHIPSTATUS = ? " +
                     "where USERID = ?";
-            for(var friendStatus : user.getFriendsIds()) {
-                jdbcTemplate.update(sqlQueryInsert,
-                        friendStatus.getId(),
-                        friendStatus.getUserId(),
-                        friendStatus.getSubscriberId(),
-                        friendStatus.getFriendshipStatus(), user.getId());
-                conn.commit();
-            }
+            Util.batchUpdateValues(conn, jdbcTemplate, user.getFriendsIds(), sqlQueryInsert);
         } catch (SQLException e) {
             conn.rollback();
             throw new ServerSideException(e.getMessage());
@@ -198,8 +189,6 @@ public class UserDbStorage implements DbStorage<User> {
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        Map<String, Set<SubscriberStatus>> valueMap = new HashMap<>();
-
         return User.builder()
                 .id(resultSet.getInt("id"))
                 .email(resultSet.getString("email"))
