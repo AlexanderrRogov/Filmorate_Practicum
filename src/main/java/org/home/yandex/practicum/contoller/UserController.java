@@ -4,8 +4,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.home.yandex.practicum.model.User;
 import org.home.yandex.practicum.service.UserService;
-import org.home.yandex.practicum.storage.InMemoryUserStorage;
-import org.home.yandex.practicum.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,38 +19,41 @@ import java.util.List;
 @Slf4j
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-   public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {
-       userStorage = inMemoryUserStorage;
+   public UserController(UserService userService) {
        this.userService = userService;
    }
 
     @GetMapping("/users")
     public List<User> users() {
-       return userStorage.getUsers().values().stream().toList();
+       return userService.getUsers();
     }
 
-    @PutMapping("/user/{id}")
-    public User saveArticle(@Valid @RequestBody User user, @PathVariable int id) {
-       return userStorage.saveArticle(user, id);
+    @PutMapping("/user")
+    public User saveArticle(@Valid @RequestBody User user) {
+       return userService.update(user);
     }
 
     @PostMapping("/user")
     public User create(@Valid @RequestBody User user) {
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @DeleteMapping("/user/{id}")
     public User deleteUser(@PathVariable int id) {
-         return userStorage.delete(id);
+         return userService.delete(id);
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public User addFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.addFriend(id, friendId);
+    }
+
+    @PutMapping("/users/{id}/accept/{friendId}")
+    public User acceptFriend(@PathVariable int id, @PathVariable int friendId) {
+        return userService.acceptFriend(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
